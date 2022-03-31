@@ -134,3 +134,19 @@ app.get('/account', verifyIfCPFExistis, (request, response) => {
 
   return response.json(customer);
 })
+
+app.delete('/account', verifyIfCPFExistis, (request, response) => {
+  const { customer } = request;
+
+  customers.splice(customer, 1);
+
+  return response.status(200).json(customers);
+})
+
+app.get('/balance', verifyIfCPFExistis, (request, response) => {
+  const { customer } = request;
+
+  const balance = getBalance(customer.statement);
+
+  return response.json(balance)
+})

@@ -51,8 +51,23 @@ app.post('/account', (request, response) => {
 })
 
 // app.use(verifyIfCPFExistis);
-
 app.get('/statement', verifyIfCPFExistis, (request, response) => {
   const { customer } = request;
   return response.json(customer.statement)
+})
+
+app.post('/deposit', verifyIfCPFExistis, (request, response) => {
+  const { description, amount } = request.body;
+  const { customer } = request;
+
+  const statementOperation = {
+    description,
+    amount,
+    created_at: new Date(),
+    type: 'credit'
+  };
+
+  customer.statement.push(statementOperation);
+
+  return response.status(201).send();
 })

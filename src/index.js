@@ -14,19 +14,19 @@ app.get('/', (request, response) => {
   response.json({ message: 'server is on' })
 })
 
-const custumers = [];
+const customers = [];
 
 
 app.post('/account', (request, response) => {
   const { cpf, name } = request.body;
 
-  const customerAlreadyExists = custumers.some((custumer) => custumer.cpf === cpf);
+  const customerAlreadyExists = customers.some((custumer) => custumer.cpf === cpf);
 
   if (customerAlreadyExists) {
     return response.status(400).json({ error: "Customer already exists." })
   }
 
-  custumers.push({
+  customers.push({
     cpf,
     name,
     id: uuidv4(),
@@ -34,4 +34,12 @@ app.post('/account', (request, response) => {
   });
 
   response.status(201).send();
+})
+
+app.get('/statement/:cpf', (request, response) => {
+  const { cpf } = request.params;
+
+  const customer = customers.find(customer => customer.cpf === cpf);
+
+  return response.json(customer.statement)
 })

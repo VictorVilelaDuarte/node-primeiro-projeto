@@ -16,6 +16,20 @@ app.get('/', (request, response) => {
 
 const customers = [];
 
+//middleware
+function verifyIfCPFExistis(request, response, next) {
+  const { cpf } = request.headers;
+
+  const customer = customers.find(customer => customer.cpf === cpf);
+
+  if (!customer) {
+    return response.status(400).json({ error: 'Costumer does not exist' })
+  }
+
+  request.customer = customer;
+
+  return next();
+}
 
 app.post('/account', (request, response) => {
   const { cpf, name } = request.body;
@@ -36,10 +50,9 @@ app.post('/account', (request, response) => {
   response.status(201).send();
 })
 
-app.get('/statement/:cpf', (request, response) => {
-  const { cpf } = request.params;
+// app.use(verifyIfCPFExistis);
 
-  const customer = customers.find(customer => customer.cpf === cpf);
-
+app.get('/statement', verifyIfCPFExistis, (request, response) => {
+  const { customer } = request;
   return response.json(customer.statement)
 })
